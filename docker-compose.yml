@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  aeromaintain:
+    build: .
+    container_name: aeromaintain-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dataset:/app/dataset
+      - ./app.py:/app/app.py
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+      - STREAMLIT_LOGGER_LEVEL=error
+    networks:
+      - aeromaintain-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  aeromaintain-network:
+    driver: bridge
